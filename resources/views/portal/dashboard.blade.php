@@ -41,15 +41,15 @@
                 <div class="table-responsive">
                     <table class="table table-striped align-middle mb-0">
                         <thead>
-                            <tr><th>Department</th><th class="text-end">Students</th><th class="text-end">Teachers</th><th class="text-end">Subjects</th></tr>
+                            <tr><th>Department</th><th class="text-center">Students</th><th class="text-center">Teachers</th><th class="text-center">Subjects</th></tr>
                         </thead>
                         <tbody class="tw:tabular-nums">
                             @forelse ($departments as $department)
                                 <tr>
                                     <td>{{ $department['dept_name'] }}</td>
-                                    <td class="text-end">{{ $department['students'] }}</td>
-                                    <td class="text-end">{{ $department['teachers'] }}</td>
-                                    <td class="text-end">{{ $department['subjects'] }}</td>
+                                    <td class="text-center">{{ $department['students'] }}</td>
+                                    <td class="text-center">{{ $department['teachers'] }}</td>
+                                    <td class="text-center">{{ $department['subjects'] }}</td>
                                 </tr>
                             @empty
                                 <x-empty-state colspan="4" title="No departments yet">
@@ -61,9 +61,9 @@
                             <tfoot class="tw:tabular-nums">
                                 <tr class="fw-semibold">
                                     <td>Total</td>
-                                    <td class="text-end">{{ number_format($totals['students']) }}</td>
-                                    <td class="text-end">{{ number_format($totals['teachers']) }}</td>
-                                    <td class="text-end">{{ number_format($totals['subjects']) }}</td>
+                                    <td class="text-center">{{ number_format($totals['students']) }}</td>
+                                    <td class="text-center">{{ number_format($totals['teachers']) }}</td>
+                                    <td class="text-center">{{ number_format($totals['subjects']) }}</td>
                                 </tr>
                             </tfoot>
                         @endif
@@ -117,7 +117,7 @@
                             @foreach ($todayPrints as $print)
                                 <tr>
                                     <td class="tw:tabular-nums">{{ $print['time'] }}</td>
-                                    <td class="font-monospace">{{ $print['tu_roll'] }}</td>
+                                    <td class="font-monospace text-center">{{ $print['tu_roll'] }}</td>
                                     <td>{{ $print['name'] }}</td>
                                     <td>{{ $print['subject'] }}</td>
                                     <td>{{ $print['page_type'] }}</td>

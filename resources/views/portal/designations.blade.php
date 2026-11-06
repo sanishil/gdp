@@ -16,14 +16,13 @@
             <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#add-designation"><i class="fa-solid fa-plus me-1" aria-hidden="true"></i> Add designation</button>
         </x-slot:actions>
         <thead>
-            <tr><th>Designation</th><th class="text-end">Teachers</th><th>Added</th><th class="text-end" data-export-skip><span class="visually-hidden">Actions</span></th></tr>
+            <tr><th>Designation</th><th class="text-center">Teachers</th><th class="text-end" data-export-skip><span class="visually-hidden">Actions</span></th></tr>
         </thead>
         <tbody>
             @forelse ($designations as $designation)
                 <tr>
                     <td class="fw-semibold">{{ $designation->name }}</td>
-                    <td class="text-end">{{ $designation->teachers_count }}</td>
-                    <td class="text-body-secondary" data-export="{{ $designation->created_at->toDateString() }}">{{ $designation->created_at->format('j M Y') }}</td>
+                    <td class="text-center">{{ $designation->teachers_count }}</td>
                     <x-row-actions
                         :record="['designation_id' => $designation->id, 'name' => $designation->name]"
                         :label="$designation->name"
@@ -34,7 +33,7 @@
                     />
                 </tr>
             @empty
-                <x-empty-state colspan="4" title="No designations yet" icon="fa-id-badge" />
+                <x-empty-state colspan="3" title="No designations yet" icon="fa-id-badge" />
             @endforelse
         </tbody>
     </x-table-card>

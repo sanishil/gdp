@@ -16,13 +16,12 @@
             <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#add-assignment-type"><i class="fa-solid fa-plus me-1" aria-hidden="true"></i> Add assignment type</button>
         </x-slot:actions>
         <thead>
-            <tr><th>Assignment type</th><th>Added</th><th class="text-end" data-export-skip><span class="visually-hidden">Actions</span></th></tr>
+            <tr><th>Assignment type</th><th class="text-end" data-export-skip><span class="visually-hidden">Actions</span></th></tr>
         </thead>
         <tbody>
             @forelse ($assignmentTypes as $assignmentType)
                 <tr>
                     <td class="fw-semibold">{{ $assignmentType->name }}</td>
-                    <td class="text-body-secondary" data-export="{{ $assignmentType->created_at->toDateString() }}">{{ $assignmentType->created_at->format('j M Y') }}</td>
                     <x-row-actions
                         :record="['assignment_type_id' => $assignmentType->id, 'name' => $assignmentType->name]"
                         :label="$assignmentType->name"
@@ -33,7 +32,7 @@
                     />
                 </tr>
             @empty
-                <x-empty-state colspan="3" title="No assignment types yet" icon="fa-file-lines" />
+                <x-empty-state colspan="2" title="No assignment types yet" icon="fa-file-lines" />
             @endforelse
         </tbody>
     </x-table-card>

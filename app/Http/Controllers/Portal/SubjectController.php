@@ -21,7 +21,11 @@ class SubjectController extends Controller
     {
         return view('portal.subjects', [
             'portal' => $request->user()->role->value,
-            'subjects' => Subject::with('department')->orderBy('code')->get(),
+            'subjects' => Subject::with('department')
+                ->orderBy('semester')
+                ->orderBy(Department::select('dept_name')->whereColumn('departments.id', 'subjects.department_id'))
+                ->orderBy('code')
+                ->get(),
             'departments' => Department::orderBy('dept_name')->get(['id', 'dept_name']),
         ]);
     }

@@ -13,8 +13,7 @@ return new class extends Migration
     {
         Schema::create('students', function (Blueprint $table) {
             $table->id();
-            $table->string('std_id', 15)->unique();
-            $table->string('tu_roll', 30)->nullable();
+            $table->string('tu_roll', 30)->unique();
             $table->string('title', 10);
             $table->string('name', 100);
             $table->foreignId('department_id')->nullable()->constrained()->nullOnDelete();

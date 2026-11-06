@@ -19,20 +19,21 @@
         </x-slot:filters>
 
         <thead>
-            <tr><th>Student</th><th>Roll no.</th><th>Department</th><th>Semester</th><th>Last subject</th><th>Teacher</th><th class="text-end">Reprints</th><th>Submitted</th><th data-export-skip><span class="visually-hidden">Actions</span></th></tr>
+            <tr><th>Student</th><th>Roll no.</th><th>Department</th><th>Semester</th><th>Last subject</th><th>Teacher</th><th class="text-center">Reprints</th><th>Submitted</th><th data-export-skip><span class="visually-hidden">Actions</span></th></tr>
         </thead>
         <tbody>
             @forelse ($students as $student)
                 <tr data-dept="{{ $student['std_dept'] }}">
                     <td class="fw-semibold">{{ $student['name'] }}</td>
-                    <td class="font-monospace">{{ $student['tu_roll'] }}</td>
+                    <td class="font-monospace text-center">{{ $student['tu_roll'] }}</td>
                     <td>{{ $student['std_dept'] }}</td>
                     <td>{{ $student['sem'] }} sem, sec {{ $student['section'] }}</td>
                     <td>{{ $student['subjects'] }} <span class="text-body-secondary">({{ $student['code'] }})</span></td>
                     <td>{{ $student['f_name'] }}</td>
-                    <td class="text-end">{{ $student['reprint'] }}</td>
+                    <td class="text-center">{{ $student['reprint'] }}</td>
                     <td data-export="{{ $student['dos'] }}">{{ \Illuminate\Support\Carbon::parse($student['dos'])->format('j M Y') }}</td>
-                    <x-row-actions :record="['name' => $student['name'], 'tu_roll' => $student['tu_roll']]" :label="$student['name']" delete="delete-student" />
+                    <x-row-actions :record="['name' => $student['name'], 'tu_roll' => $student['tu_roll']]" :label="$student['name']" delete="delete-student"
+                        :delete-action="route($portal.'.students.destroy', $student['id'])" />
                 </tr>
             @empty
                 <x-empty-state colspan="9" title="No students yet" icon="fa-address-card" />
@@ -40,7 +41,7 @@
         </tbody>
     </x-table-card>
 
-    <x-modal id="delete-student" title="Delete this student record?" submit="Delete" busy="Deleting…" danger message="Student record deleted.">
+    <x-modal id="delete-student" title="Delete this student record?" submit="Delete" busy="Deleting…" danger :action="route($portal.'.students')" method="DELETE">
         <p class="mb-0">The record for <strong data-record-text="name"></strong> (<span data-record-text="tu_roll"></span>) and its print history will be deleted. If they print again, a new record is created.</p>
     </x-modal>
 </x-layouts.portal>

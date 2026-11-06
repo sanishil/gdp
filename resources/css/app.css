@@ -86,7 +86,7 @@
     }
 
     /*
-    | Portal: institute banner, navy sidebar with an "Admin / Control panel" block and capitalised
+    | Portal: institute banner, navy sidebar with an "Admin / Control panel" block and its
     | menu, a white top bar with the page title and sign-out, then white cards on a grey page.
     | The sidebar folds to icons on desktop (html.sidebar-collapsed) and slides in below 992px.
     */
@@ -227,12 +227,9 @@
         gap: 0.9rem;
         padding: 0.8rem 1.5rem;
         border: 0;
-        border-left: 4px solid transparent;
         background: none;
         font-size: 0.9375rem;
-        font-weight: 700;
-        letter-spacing: 0.03em;
-        text-transform: uppercase;
+        font-weight: 600;
         color: rgba(255, 255, 255, 0.92);
         white-space: nowrap;
     }
@@ -248,8 +245,9 @@
         color: #fff;
     }
 
+    /* The active marker is an inset shadow, not a border, so folded icons stay exactly centred. */
     .portal-sidebar .nav-link.active {
-        border-left-color: var(--portal-icon);
+        box-shadow: inset 4px 0 0 var(--portal-icon);
         background: rgba(255, 255, 255, 0.13);
         color: #fff;
     }
@@ -308,6 +306,36 @@
         padding: 0.5rem 1rem;
         border-bottom: 2px solid var(--brand);
         background: #fff;
+    }
+
+    /* The menu toggler: a square outlined button that fills with the brand blue on hover. */
+    .portal-topbar [data-sidebar-toggle] {
+        display: inline-grid;
+        flex-shrink: 0;
+        place-items: center;
+        width: 2.5rem;
+        height: 2.5rem;
+        padding: 0;
+        border: 1px solid var(--portal-card-line);
+        border-radius: 0.5rem;
+        background: #fff;
+        color: var(--brand);
+        transition:
+            background-color 0.15s ease,
+            color 0.15s ease,
+            border-color 0.15s ease;
+    }
+
+    .portal-topbar [data-sidebar-toggle]:hover,
+    .portal-topbar [data-sidebar-toggle]:active {
+        border-color: var(--brand);
+        background: var(--brand);
+        color: #fff;
+    }
+
+    .portal-topbar [data-sidebar-toggle]:focus-visible {
+        outline: 0;
+        box-shadow: 0 0 0 0.2rem rgba(34, 96, 159, 0.3);
     }
 
     .portal-title {
@@ -415,6 +443,22 @@
         font-size: 0.9375rem;
         font-weight: 700;
         color: #fff;
+        /* Every heading is centred, overriding the .text-end some number columns carry. */
+        text-align: center !important;
+        vertical-align: middle;
+    }
+
+    /* The "#" serial column app.js adds to every portal table. */
+    .portal .table .serial-col {
+        width: 3.5rem;
+        text-align: center !important;
+        font-variant-numeric: tabular-nums;
+        white-space: nowrap;
+    }
+
+    .portal .table > tbody .serial-col {
+        color: var(--bs-secondary-color);
+        font-weight: 600;
     }
 
     .portal .table > thead th:last-child {
@@ -811,6 +855,36 @@
         color: var(--orange);
     }
 
+    /* Cover form: the optional second teacher, set apart in its own panel under the first. */
+    .second-teacher {
+        margin-top: 1.25rem;
+        padding: 1rem;
+        border: 1px dashed var(--line);
+        border-radius: 10px;
+    }
+
+    .second-teacher-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.75rem;
+        margin-bottom: 1rem;
+    }
+
+    .second-teacher-title {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin: 0;
+        font-weight: 700;
+        color: var(--brand);
+    }
+
+    .second-teacher-title i {
+        font-size: 0.8rem;
+        color: var(--orange);
+    }
+
     .brand-form .form-label {
         margin-bottom: 0.35rem;
         font-size: 0.9rem;
@@ -1170,7 +1244,7 @@
         padding: 1rem;
         background: #fff;
         text-align: center;
-        animation: intro-fallback 0s 4s forwards;
+        animation: intro-fallback 0s 2s forwards;
     }
 
     .intro-loader-logo {
@@ -1255,6 +1329,22 @@
 /* Printing the cover page: app.js copies the preview into #print-root. */
 #print-root {
     display: none;
+}
+
+/* Making the PDF: app.js lays the copy out off screen at A4 width (794px at 96dpi) to photograph it. */
+#print-root.is-capturing {
+    display: block;
+    position: fixed;
+    top: 0;
+    left: -10000px;
+    width: 794px;
+    pointer-events: none;
+}
+
+#print-root.is-capturing > .cover-paper {
+    width: 794px;
+    border-radius: 0 !important;
+    box-shadow: none !important;
 }
 
 @media print {

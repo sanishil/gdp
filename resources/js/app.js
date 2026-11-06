@@ -112,7 +112,9 @@ async function playIntro() {
         )
         .to(intro, { backgroundColor: 'rgba(255, 255, 255, 0)', duration: 0.6 }, 'outro+=0.1')
         .set(headerLogo ?? {}, { opacity: 1 })
-        .set(intro, { autoAlpha: 0 });
+        .set(intro, { autoAlpha: 0 })
+        /* Played at double speed, so the whole intro takes about 1.7 seconds. */
+        .timeScale(2);
 }
 
 if (intro) {
@@ -406,8 +408,48 @@ document.addEventListener('input', (event) => {
 /* Fill the preview from what the form starts with: defaults like "This is a…", or values the browser restored. */
 document.querySelectorAll('[data-preview]').forEach((field) => field.dispatchEvent(new Event('input', { bubbles: true })));
 
+/*
+| Cover form: "Add another teacher" shows the second teacher's fields; "Remove" clears and hides them again, which
+| also hides them on the sheet. While hidden the fieldset is disabled, so its fields aren't required.
+*/
+const secondTeacher = document.getElementById('second-teacher');
+
+const toggleSecondTeacher = (show) => {
+    secondTeacher.hidden = !show;
+    secondTeacher.disabled = !show;
+    document.querySelector('[data-second-teacher="add"]').hidden = show;
+
+    if (!show) {
+        secondTeacher.querySelectorAll('[data-preview]').forEach((field) => {
+            field.value = '';
+            field.classList.remove('is-invalid');
+            field.dispatchEvent(new Event('change', { bubbles: true }));
+        });
+    }
+};
+
+if (secondTeacher) {
+    document.addEventListener('click', (event) => {
+        const button = event.target.closest('[data-second-teacher]');
+
+        if (!button) {
+            return;
+        }
+
+        toggleSecondTeacher(button.dataset.secondTeacher === 'add');
+
+        if (button.dataset.secondTeacher === 'add') {
+            document.getElementById('f2_dept').focus();
+        }
+    });
+}
+
 document.addEventListener('reset', (event) => {
     event.target.classList.remove('was-validated');
+
+    if (secondTeacher && event.target.contains(secondTeacher)) {
+        toggleSecondTeacher(false);
+    }
 
     setTimeout(() => {
         event.target.querySelectorAll('[data-option-filter]').forEach((select) => select.dispatchEvent(new Event('refresh')));
@@ -441,9 +483,17 @@ function filterTable(tableId, page = 1) {
         return;
     }
 
+    /* The row's text without its "#" cell, so searching "1" doesn't match every row numbered 1. */
+    const rowText = (row) =>
+        [...row.cells]
+            .filter((cell) => !cell.classList.contains('serial-col'))
+            .map((cell) => cell.textContent)
+            .join(' ')
+            .toLowerCase();
+
     const matches = rows.filter((row) => {
         const match =
-            (!query || row.textContent.toLowerCase().includes(query)) &&
+            (!query || rowText(row).includes(query)) &&
             filters.every((select) => row.dataset[select.dataset.filterKey] === select.value);
         row.toggleAttribute('data-filtered-out', !match);
         return match;
@@ -460,6 +510,7 @@ function filterTable(tableId, page = 1) {
         row.removeAttribute('data-striped');
     });
     [...onPage].forEach((row, index) => row.toggleAttribute('data-striped', index % 2 === 0));
+    numberRows(table, [...onPage], start);
 
     let noResults = table.querySelector('tr[data-no-results]');
 
@@ -516,6 +567,53 @@ function pagerHtml(tableId, current, pageCount) {
         ${numbered.join('')}
         ${item('<i class="fa-solid fa-chevron-right" aria-hidden="true"></i>', current + 1, { disabled: current === pageCount, ariaLabel: 'Next page' })}
     </ul>`;
+}
+
+/*
+| Every portal table gets a centred "#" column first. It's added here, before the first filterTable call, so the
+| "nothing matches" row spans it too. Empty-state rows stretch over it; a footer row (e.g. Total) gets a blank cell.
+| It's left out of CSV exports and searches, and numbered by numberRows.
+*/
+document.querySelectorAll('.portal table').forEach((table) => {
+    const serialCell = (tag) => {
+        const cell = document.createElement(tag);
+        cell.className = 'serial-col';
+        cell.setAttribute('data-export-skip', '');
+        return cell;
+    };
+
+    table.querySelectorAll('thead tr').forEach((row) => {
+        const heading = serialCell('th');
+        heading.scope = 'col';
+        heading.textContent = '#';
+        row.prepend(heading);
+    });
+
+    table.querySelectorAll('tbody tr, tfoot tr').forEach((row) => {
+        const wideCell = row.cells.length === 1 ? row.cells[0] : null;
+
+        if (wideCell?.colSpan > 1) {
+            wideCell.colSpan += 1;
+            return;
+        }
+
+        row.prepend(serialCell('td'));
+    });
+
+    numberRows(table);
+});
+
+/* Number the rows in the order they're shown: 1, 2, 3… on page one, continuing from where the last page ended. */
+function numberRows(table, rows = null, start = 0) {
+    const shown = rows ?? [...table.querySelectorAll('tbody tr:not([data-empty-row]):not([data-no-results])')];
+
+    shown.forEach((row, index) => {
+        const cell = row.querySelector(':scope > .serial-col');
+
+        if (cell) {
+            cell.textContent = start + index + 1;
+        }
+    });
 }
 
 document.querySelectorAll('table[data-per-page]').forEach((table) => filterTable(table.id));
@@ -644,8 +742,9 @@ function setBusy(button, busy) {
 }
 
 /*
-| The cover page form saves the student's details (updated if the roll number is on file, added if not), then prints.
-| A field the server rejects is marked and nothing prints; if the save can't be reached, it still prints.
+| The cover page form saves the student's details (updated if the roll number is on file, added if not), then either
+| downloads the cover page as a PDF (data-output="pdf") or opens the print dialog (data-output="print").
+| A field the server rejects is marked and nothing is made; if the save can't be reached, the page is still made.
 */
 async function saveThenPrint(form, button) {
     form.dataset.submitting = 'true';
@@ -656,6 +755,14 @@ async function saveThenPrint(form, button) {
         headers: { Accept: 'application/json' },
         body: new FormData(form),
     }).catch(() => null);
+
+    if (response?.status !== 422 && button?.dataset.output === 'pdf') {
+        if (!response?.ok) {
+            toast("Couldn't save your details, but your PDF is still being made.", 'error');
+        }
+
+        await downloadCoverPdf(pdfFileName(form));
+    }
 
     delete form.dataset.submitting;
     setBusy(button, false);
@@ -678,11 +785,26 @@ async function saveThenPrint(form, button) {
         return;
     }
 
+    if (button?.dataset.output === 'pdf') {
+        return;
+    }
+
     if (!response?.ok) {
         toast("Couldn't save your details, but you can still print.", 'error');
     }
 
-    await printCoverPage();
+    await printCoverPage(pdfFileName(form));
+}
+
+/*
+| The PDF's file name (and the print dialog's suggested one): student name + subject + today's date (IST),
+| e.g. "Ravi Kumar_Applied Physics_2026-11-06". Characters a filename can't hold are dropped.
+*/
+function pdfFileName(form) {
+    const clean = (value) => (value ?? '').replace(/[\\/:*?"<>|]+/g, ' ').replace(/\s+/g, ' ').trim();
+    const today = new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Kolkata' }).format(new Date());
+
+    return [clean(form.elements.name?.value), clean(form.elements.subjects?.value), today].filter(Boolean).join('_');
 }
 
 document.addEventListener('submit', (event) => {
@@ -973,12 +1095,54 @@ if (paperToPrint) {
     document.body.append(root);
 }
 
-/* Wait for the copy's images (the logo) to be ready, then open the print dialog. */
-async function printCoverPage() {
+/* Wait for the copy's images (the logo) to be ready, then open the print dialog, titled for the PDF's file name. */
+async function printCoverPage(fileName) {
     const images = document.querySelectorAll('#print-root img');
+    const pageTitle = document.title;
 
     await Promise.all([...images].map((image) => image.decode().catch(() => null)));
+
+    if (fileName) {
+        document.title = fileName;
+    }
+
     window.print();
+    document.title = pageTitle;
+}
+
+/*
+| Download the cover page as an A4 PDF without the print dialog. The print copy is laid out off screen at A4 width
+| (794px), photographed at 3x for sharp text, and placed full-page in the PDF. The libraries load only when needed.
+| If anything fails, the print dialog opens instead, so the student can still save it.
+*/
+async function downloadCoverPdf(fileName) {
+    const root = document.getElementById('print-root');
+    const paper = root?.firstElementChild;
+
+    if (!paper) {
+        return;
+    }
+
+    root.classList.add('is-capturing');
+
+    try {
+        const [{ toJpeg }, { jsPDF }] = await Promise.all([import('html-to-image'), import('jspdf')]);
+
+        await Promise.all([...root.querySelectorAll('img')].map((image) => image.decode().catch(() => null)));
+
+        const image = await toJpeg(paper, { pixelRatio: 3, quality: 0.95, backgroundColor: '#ffffff', skipFonts: true });
+        const pdf = new jsPDF({ unit: 'mm', format: 'a4', compress: true });
+
+        pdf.addImage(image, 'JPEG', 0, 0, 210, 297);
+        pdf.save(`${fileName || 'cover-page'}.pdf`);
+        toast('Your cover page PDF has been downloaded.');
+    } catch (error) {
+        toast("Couldn't make the PDF here, so the print dialog is opening instead.", 'error');
+        root.classList.remove('is-capturing');
+        await printCoverPage(fileName);
+    } finally {
+        root.classList.remove('is-capturing');
+    }
 }
 
 /* Toasts ------------------------------------------------------------------ */

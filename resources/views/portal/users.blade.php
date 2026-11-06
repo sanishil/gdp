@@ -40,8 +40,8 @@
                 <tr>
                     <td class="fw-semibold">{{ $user->name }} @if ($isMe)<span class="small text-body-secondary fw-normal">(you)</span>@endif</td>
                     <td class="text-break">{{ $user->email }}</td>
-                    <td><span class="pill pill-info">{{ $user->role->label() }}</span></td>
-                    <td data-export="{{ $statusLabel($user) }}"><span class="pill {{ $statusPill($user) }}">{{ $statusLabel($user) }}</span></td>
+                    <td class="text-center"><span class="pill pill-info">{{ $user->role->label() }}</span></td>
+                    <td class="text-center" data-export="{{ $statusLabel($user) }}"><span class="pill {{ $statusPill($user) }}">{{ $statusLabel($user) }}</span></td>
                     <td class="text-body-secondary" data-export="{{ $user->created_at->toDateString() }}">{{ $user->created_at->diffForHumans() }}</td>
                     <x-row-actions :record="$record" :label="$user->name" edit="edit-user" :edit-action="route('admin.users.update', $user)" :delete="$isMe ? null : 'delete-user'" :delete-action="route('admin.users.destroy', $user)">
                         @unless ($isMe)

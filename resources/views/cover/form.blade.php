@@ -33,7 +33,7 @@
                         <h2 class="form-part-title"><i class="fa-solid fa-plus" aria-hidden="true"></i> Student details</h2>
                         <div class="row g-3">
                             <div class="col-12">
-                                <label class="form-label" for="tu_roll">University roll no.</label>
+                                <label class="form-label" for="tu_roll">Tripura University roll no.</label>
                                 <input id="tu_roll" name="tu_roll" class="form-control" pattern="{{ \App\Http\Requests\SaveStudentRequest::ROLL_PATTERN }}" maxlength="30" autocomplete="off" required data-preview="tu_roll"
                                        data-student-lookup="{{ route('cover.students.show', ['tuRoll' => '00000']) }}">
                                 <x-field-error for="tu_roll">Enter your university roll number.</x-field-error>
@@ -86,14 +86,6 @@
                                     @endforeach
                                 </select>
                             </div>
-                            <div class="col-sm-6">
-                                <label class="form-label" for="case_presentation">Case presentation <span class="intake-muted fw-normal">(optional)</span></label>
-                                <input id="case_presentation" name="case_presentation" class="form-control" data-preview="case_presentation" placeholder="e.g. Case of Bronchial Asthma">
-                            </div>
-                            <div class="col-sm-6">
-                                <label class="form-label" for="topic">Topic <span class="intake-muted fw-normal">(optional)</span></label>
-                                <input id="topic" name="topic" class="form-control" data-preview="topic">
-                            </div>
                             <div class="col-sm-8">
                                 <label class="form-label" for="subjects">Subject title</label>
                                 <select id="subjects" name="subjects" class="form-select" required data-preview="subject" data-autofill="code"
@@ -140,31 +132,70 @@
                             </div>
                             <div class="col-sm-6">
                                 <label class="form-label" for="f_name">Teacher</label>
-                                <input id="f_name" name="f_name" class="form-control" list="teacher-list" autocomplete="off" required data-preview="f_name" data-autofill="f_designation">
-                                <datalist id="teacher-list" data-option-filter='{"dept":"f_dept"}'>
+                                <select id="f_name" name="f_name" class="form-select" required data-preview="f_name" data-autofill="f_designation"
+                                        data-option-filter='{"dept":"f_dept"}'>
+                                    <option value="" data-label="Choose…" data-empty="No teachers in this department">Choose…</option>
                                     @foreach ($teachers as $teacher)
-                                        <option value="{{ $teacher->name }}" data-value="{{ $teacher->designationTitle() }}" data-dept="{{ $teacher->department->dept_name }}"></option>
+                                        <option value="{{ $teacher->name }}" data-value="{{ $teacher->designationTitle() }}" data-dept="{{ $teacher->department->dept_name }}">{{ $teacher->name }}</option>
                                     @endforeach
-                                </datalist>
-                                <x-field-error for="f_name">Enter or choose the teacher's name.</x-field-error>
+                                </select>
+                                <x-field-error for="f_name">Choose the teacher.</x-field-error>
                             </div>
                             <div class="col-sm-6">
                                 <label class="form-label" for="f_designation">Designation</label>
-                                <input id="f_designation" name="f_designation" class="form-control" list="designation-list" autocomplete="off" required data-preview="f_designation">
-                                <datalist id="designation-list">
-                                    @foreach ($designations as $designation)
-                                        <option value="{{ $designation }}"></option>
-                                    @endforeach
-                                </datalist>
-                                <x-field-error for="f_designation">Enter or choose the teacher's designation.</x-field-error>
+                                <input id="f_designation" name="f_designation" class="form-control" readonly tabindex="-1" data-preview="f_designation">
                             </div>
                         </div>
+
+                        {{-- A second teacher, optional. Disabled while hidden so it isn't required or sent. --}}
+                        <fieldset class="second-teacher" id="second-teacher" aria-labelledby="second-teacher-title" hidden disabled>
+                            <div class="second-teacher-head">
+                                <p class="second-teacher-title" id="second-teacher-title"><i class="fa-solid fa-user-plus" aria-hidden="true"></i> Second teacher</p>
+                                <button type="button" class="btn btn-sm btn-outline-danger" data-second-teacher="remove">
+                                    <i class="fa-solid fa-xmark me-1" aria-hidden="true"></i> Remove
+                                </button>
+                            </div>
+                            <div class="row g-3">
+                                <div class="col-12">
+                                    <label class="form-label" for="f2_dept">Teacher's department</label>
+                                    <select id="f2_dept" name="f2_dept" class="form-select" required data-preview="f2_dept">
+                                        <option value="">Choose…</option>
+                                        @foreach ($departments as $department)
+                                            <option>{{ $department->dept_name }}</option>
+                                        @endforeach
+                                    </select>
+                                    <x-field-error for="f2_dept">Choose the second teacher's department.</x-field-error>
+                                </div>
+                                <div class="col-sm-6">
+                                    <label class="form-label" for="f2_name">Teacher</label>
+                                    <select id="f2_name" name="f2_name" class="form-select" required data-preview="f2_name" data-autofill="f2_designation"
+                                            data-option-filter='{"dept":"f2_dept"}'>
+                                        <option value="" data-label="Choose…" data-empty="No teachers in this department">Choose…</option>
+                                        @foreach ($teachers as $teacher)
+                                            <option value="{{ $teacher->name }}" data-value="{{ $teacher->designationTitle() }}" data-dept="{{ $teacher->department->dept_name }}">{{ $teacher->name }}</option>
+                                        @endforeach
+                                    </select>
+                                    <x-field-error for="f2_name">Choose the second teacher.</x-field-error>
+                                </div>
+                                <div class="col-sm-6">
+                                    <label class="form-label" for="f2_designation">Designation</label>
+                                    <input id="f2_designation" name="f2_designation" class="form-control" readonly tabindex="-1" data-preview="f2_designation">
+                                </div>
+                            </div>
+                        </fieldset>
+
+                        <button type="button" class="btn btn-sm btn-outline-primary mt-3" data-second-teacher="add">
+                            <i class="fa-solid fa-user-plus me-1" aria-hidden="true"></i> Add another teacher
+                        </button>
                     </section>
 
                     <div class="form-actions">
                         <button type="reset" class="btn btn-danger"><i class="fa-solid fa-eraser me-1" aria-hidden="true"></i> Clear</button>
-                        <button type="submit" class="btn btn-success">
-                            <i class="fa-solid fa-print me-1" aria-hidden="true"></i> Print cover page
+                        <button type="submit" class="btn btn-outline-primary" data-output="print" data-busy="Saving…">
+                            <i class="fa-solid fa-print me-1" aria-hidden="true"></i> Print
+                        </button>
+                        <button type="submit" class="btn btn-success" data-output="pdf" data-busy="Making PDF…">
+                            <i class="fa-solid fa-file-pdf me-1" aria-hidden="true"></i> Download PDF
                         </button>
                     </div>
                 </form>

@@ -16,14 +16,14 @@
             <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#add-department"><i class="fa-solid fa-plus me-1" aria-hidden="true"></i> Add department</button>
         </x-slot:actions>
         <thead>
-            <tr><th>Department</th><th class="text-end">Teachers</th><th class="text-end">Subjects</th><th class="text-end" data-export-skip><span class="visually-hidden">Actions</span></th></tr>
+            <tr><th>Department</th><th class="text-center">Teachers</th><th class="text-center">Subjects</th><th class="text-end" data-export-skip><span class="visually-hidden">Actions</span></th></tr>
         </thead>
         <tbody>
             @forelse ($departments as $department)
                 <tr>
                     <td class="fw-semibold">{{ $department->dept_name }}</td>
-                    <td class="text-end">{{ $department->teachers_count }}</td>
-                    <td class="text-end">{{ $department->subjects_count }}</td>
+                    <td class="text-center">{{ $department->teachers_count }}</td>
+                    <td class="text-center">{{ $department->subjects_count }}</td>
                     <x-row-actions
                         :record="[
                             'department_id' => $department->id,

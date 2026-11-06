@@ -11,8 +11,8 @@ use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 
 /**
- * The student part of the cover page form (university roll number down to section). The form sends the department
- * by name, not ID. Other fields on the form are ignored.
+ * The cover page form as it's printed: the student (university roll number down to section), saved on their record,
+ * and what's on the page (subject, teachers, date), saved as a print. The form sends names, not IDs.
  */
 class SaveStudentRequest extends FormRequest
 {
@@ -55,6 +55,29 @@ class SaveStudentRequest extends FormRequest
             'std_dept' => ['required', 'string', Rule::exists('departments', 'dept_name')],
             'sem' => ['required', 'integer', 'between:1,'.Subject::MAX_SEMESTER],
             'section' => ['nullable', Rule::in(CoverController::SECTIONS)],
+            'subjects' => ['nullable', 'string', 'max:150'],
+            'code' => ['nullable', 'string', 'max:30'],
+            'page_type' => ['nullable', 'string', 'max:100'],
+            'f_name' => ['nullable', 'string', 'max:100'],
+            'f2_name' => ['nullable', 'string', 'max:100'],
+            'dos' => ['nullable', 'date'],
+        ];
+    }
+
+    /**
+     * What's on the cover page being printed, as CoverPrint attributes.
+     *
+     * @return array{subject: ?string, subject_code: ?string, page_type: ?string, teacher: ?string, second_teacher: ?string, submitted_on: ?string}
+     */
+    public function printAttributes(): array
+    {
+        return [
+            'subject' => $this->validated('subjects'),
+            'subject_code' => $this->validated('code'),
+            'page_type' => $this->validated('page_type'),
+            'teacher' => $this->validated('f_name'),
+            'second_teacher' => $this->validated('f2_name'),
+            'submitted_on' => $this->validated('dos'),
         ];
     }
 

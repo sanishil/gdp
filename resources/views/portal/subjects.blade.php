@@ -23,6 +23,12 @@
             <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#add-subject"><i class="fa-solid fa-plus me-1" aria-hidden="true"></i> Add subject</button>
         </x-slot:actions>
         <x-slot:filters>
+            <select class="form-select form-select-sm tw:sm:w-auto" aria-label="Department" data-table-filter="subjects-table" data-filter-key="dept">
+                <option value="">All departments</option>
+                @foreach ($departments as $department)
+                    <option value="{{ $department->id }}">{{ $department->dept_name }}</option>
+                @endforeach
+            </select>
             <select class="form-select form-select-sm tw:sm:w-auto" aria-label="Semester" data-table-filter="subjects-table" data-filter-key="sem">
                 <option value="">All semesters</option>
                 @foreach ($semesters as $semester)
@@ -36,10 +42,10 @@
         </thead>
         <tbody>
             @forelse ($subjects as $subject)
-                <tr data-sem="{{ $subject->semester }}">
+                <tr data-sem="{{ $subject->semester }}" data-dept="{{ $subject->department_id }}">
                     <td class="font-monospace">{{ $subject->code }}</td>
                     <td class="fw-semibold">{{ $subject->name }}</td>
-                    <td>{{ $subject->semester }}</td>
+                    <td class="text-center">{{ $subject->semester }}</td>
                     <td>{{ $subject->department->dept_name }}</td>
                     <x-row-actions
                         :record="[
@@ -85,7 +91,7 @@
                 </div>
                 <div class="col-sm-4">
                     <label class="form-label" for="{{ $mode }}_subject_code">Code</label>
-                    <input id="{{ $mode }}_subject_code" name="code" @class(['form-control font-monospace', 'is-invalid' => $bagErrors->has('code')]) required maxlength="20" pattern="[A-Za-z]{2,5}-?\d{2,4}" placeholder="e.g. MLT-302" value="{{ $bagErrors->any() ? old('code') : '' }}">
+                    <input id="{{ $mode }}_subject_code" name="code" @class(['form-control font-monospace', 'is-invalid' => $bagErrors->has('code')]) required maxlength="20" pattern="[A-Za-z]{2,5}-?\d{2,4}(-\d{1,2}|/[A-Za-z])?" placeholder="e.g. MLT-302" value="{{ $bagErrors->any() ? old('code') : '' }}">
                     <x-field-error for="code" :bag="$dialog['bag']">Use a code like MLT-302.</x-field-error>
                 </div>
                 <div class="col-sm-4">

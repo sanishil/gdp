@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 /**
  * A student, saved (or updated) by university roll number each time they print a cover page, so the form can fill
@@ -34,6 +36,22 @@ class Student extends Model
     public function department(): BelongsTo
     {
         return $this->belongsTo(Department::class);
+    }
+
+    /**
+     * @return HasMany<CoverPrint, $this>
+     */
+    public function prints(): HasMany
+    {
+        return $this->hasMany(CoverPrint::class);
+    }
+
+    /**
+     * @return HasOne<CoverPrint, $this>
+     */
+    public function latestPrint(): HasOne
+    {
+        return $this->hasOne(CoverPrint::class)->latestOfMany();
     }
 
     /**

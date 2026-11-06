@@ -4,13 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Models\AssignmentType;
 use App\Models\Department;
-use App\Models\Designation;
 use App\Models\Subject;
 use App\Models\Teacher;
 use Illuminate\Contracts\View\View;
 
 /**
- * The cover page form. Departments, subjects, teachers, designations and assignment types come from what the
+ * The cover page form. Departments, subjects, teachers (with their designations) and assignment types come from what the
  * admin and tech portals manage; the form narrows each list by the choices before it. Titles and sections are fixed.
  */
 class CoverController extends Controller
@@ -32,7 +31,6 @@ class CoverController extends Controller
             'semesters' => range(1, Subject::MAX_SEMESTER),
             'subjects' => Subject::with('department')->orderBy('name')->get(),
             'teachers' => Teacher::with(['department', 'designations'])->orderBy('name')->get(),
-            'designations' => Designation::orderBy('name')->pluck('name'),
             'assignmentTypes' => AssignmentType::pluck('name')->sort(SORT_NATURAL | SORT_FLAG_CASE)->values(),
             'options' => ['titles' => self::TITLES, 'sections' => self::SECTIONS],
         ]);

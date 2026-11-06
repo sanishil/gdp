@@ -14,13 +14,14 @@ return new class extends Migration
         Schema::create('subjects', function (Blueprint $table) {
             $table->id();
             $table->foreignId('department_id')->constrained()->restrictOnDelete();
-            $table->foreignId('sub_course_id')->constrained()->restrictOnDelete();
             $table->unsignedTinyInteger('semester');
             $table->string('name', 120);
-            $table->string('code', 20)->unique();
+            $table->string('code', 20);
             $table->timestamps();
 
-            $table->unique(['sub_course_id', 'semester', 'name']);
+            $table->unique(['department_id', 'semester', 'name']);
+            /* Common courses (Indian Constitution, the first-year subjects, ...) share a code across departments. */
+            $table->unique(['department_id', 'code']);
         });
     }
 

@@ -12,6 +12,7 @@ use App\Http\Controllers\Portal\DashboardController;
 use App\Http\Controllers\Portal\DepartmentController;
 use App\Http\Controllers\Portal\DesignationController;
 use App\Http\Controllers\Portal\ProfileController;
+use App\Http\Controllers\Portal\StudentController as PortalStudentController;
 use App\Http\Controllers\Portal\SubjectController;
 use App\Http\Controllers\Portal\TeacherController;
 use App\Http\Controllers\StudentController;
@@ -19,8 +20,7 @@ use App\Http\Requests\SaveStudentRequest;
 use Illuminate\Support\Facades\Route;
 
 /*
-| Sign-in, sign-up, password reset and user accounts are real. The portal pages without a
-| data source yet get empty lists and show their "nothing yet" states.
+| Sign-in, sign-up, password reset, user accounts and every portal page read and write real data.
 */
 
 Route::get('/', CoverController::class)->middleware('password.changed')->name('cover.form');
@@ -56,10 +56,9 @@ Route::middleware('auth')->group(function () {
 
 foreach (['admin', 'tech'] as $portal) {
     Route::prefix($portal)->name($portal.'.')->middleware(['auth', 'password.changed', 'role:'.$portal])->group(function () use ($portal) {
-        $shared = ['portal' => $portal, 'options' => [], 'departments' => []];
-
         Route::get('/', DashboardController::class)->name('dashboard');
-        Route::view('/students', 'portal.students', $shared + ['students' => []])->name('students');
+        Route::get('/students', [PortalStudentController::class, 'index'])->name('students');
+        Route::delete('/students/{student}', [PortalStudentController::class, 'destroy'])->middleware('throttle:30,1')->name('students.destroy');
         Route::get('/departments', [DepartmentController::class, 'index'])->name('departments');
         Route::middleware('throttle:30,1')->group(function () {
             Route::post('/departments', [DepartmentController::class, 'store'])->name('departments.store');

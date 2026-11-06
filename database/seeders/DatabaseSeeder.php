@@ -27,5 +27,11 @@ class DatabaseSeeder extends Seeder
                 'email_verified_at' => now(),
             ],
         );
+
+        $this->call([
+            CstSubjectSeeder::class,
+            EeSubjectSeeder::class,
+            CivilSubjectSeeder::class,
+        ]);
     }
 }

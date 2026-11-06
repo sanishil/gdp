@@ -55,8 +55,10 @@ class StoreSubjectRequest extends FormRequest
             ],
             'code' => [
                 'required', 'string', 'max:20',
-                'regex:/^[A-Z]{2,5}-?\d{2,4}$/',
-                Rule::unique('subjects', 'code')->ignore($this->route('subject')),
+                'regex:/^[A-Z]{2,5}-?\d{2,4}(-\d{1,2}|\/[A-Z])?$/',
+                Rule::unique('subjects', 'code')
+                    ->where('department_id', $this->integer('department_id'))
+                    ->ignore($this->route('subject')),
             ],
             'semester' => ['required', 'integer', 'between:1,'.Subject::MAX_SEMESTER],
             'department_id' => ['required', 'integer', Rule::exists('departments', 'id')],
@@ -76,8 +78,8 @@ class StoreSubjectRequest extends FormRequest
             'name.unique' => 'This subject is already listed for that department and semester.',
             'code.required' => 'Enter the subject code, e.g. MLT-302.',
             'code.max' => 'Use a code like MLT-302.',
-            'code.regex' => 'Use a code like MLT-302.',
-            'code.unique' => 'Another subject already has this code.',
+            'code.regex' => 'Use a code like MLT-302 (or CSPE407-1 / EEPE-407/A for an elective option).',
+            'code.unique' => 'Another subject in this department already has this code.',
             'semester.required' => 'Choose the semester.',
             'semester.integer' => 'Choose the semester.',
             'semester.between' => 'Choose a semester from 1 to '.Subject::MAX_SEMESTER.'.',
