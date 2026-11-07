@@ -52,6 +52,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/logout', [LoginController::class, 'destroy'])->name('logout');
     Route::get('/change-password', [ChangePasswordController::class, 'edit'])->name('password.change');
     Route::post('/change-password', [ChangePasswordController::class, 'update'])->middleware('throttle:new-password');
+    Route::get('/photos/{user}', [ProfileController::class, 'showPhoto'])->name('photos.show');
 });
 
 foreach (['admin', 'tech'] as $portal) {

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Portal;
 
 use App\Http\Controllers\Controller;
+use App\Models\User;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -10,6 +11,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rules\Password;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 /**
  * My profile, in both portals (/admin/profile and /tech/profile): the signed-in user's own name,
@@ -120,6 +122,20 @@ class ProfileController extends Controller
         }
 
         return $this->backToProfile($request, 'Photo removed.');
+    }
+
+    /**
+     * Sends a user's photo from storage, so it shows on hosts where the public/storage link
+     * can't be made (e.g. InfinityFree). Every upload gets a new file name, which the URL carries,
+     * so browsers may cache each one for a long time.
+     */
+    public function showPhoto(User $user): StreamedResponse
+    {
+        abort_unless($user->photo_path && Storage::disk('public')->exists($user->photo_path), 404);
+
+        return Storage::disk('public')->response($user->photo_path, headers: [
+            'Cache-Control' => 'private, max-age=31536000, immutable',
+        ]);
     }
 
     private function backToProfile(Request $request, string $message): RedirectResponse

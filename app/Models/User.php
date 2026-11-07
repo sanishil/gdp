@@ -70,12 +70,13 @@ class User extends Authenticatable
 
     /**
      * Where the profile photo is served from, or null when there's none (the avatar shows initials instead).
-     * Built from the address the page was opened on (not APP_URL), so it loads on localhost and the LAN address alike.
+     * Served by a route rather than the public/storage link, which some hosts (e.g. InfinityFree) can't create.
+     * The file name rides along as `v`, so a new upload gets a new URL past the browser's cache.
      *
      * @return Attribute<?string, never>
      */
     protected function photoUrl(): Attribute
     {
-        return Attribute::get(fn (): ?string => $this->photo_path ? asset('storage/'.$this->photo_path) : null);
+        return Attribute::get(fn (): ?string => $this->photo_path ? route('photos.show', ['user' => $this, 'v' => basename($this->photo_path)]) : null);
     }
 }
