@@ -5,10 +5,10 @@
 @endphp
 
 {{--
-    Always light, so it prints the same in either theme. Sizes use cqw so the preview and the A4 print match (1cqw ≈ 5.95pt on A4: 26pt = 4.37cqw, 18pt = 3.02cqw, 14pt = 2.35cqw, 12pt = 2.02cqw).
+    Always light, so it prints the same in either theme. Tinos stands in for Times New Roman (same letter widths) on phones without it. Sizes use cqw so the preview and the A4 print match (1cqw ≈ 5.95pt on A4: 26pt = 4.37cqw, 18pt = 3.02cqw, 14pt = 2.35cqw, 12pt = 2.02cqw).
     The flex-1 spacers share the page's spare height between the sections, so no single gap is left at the bottom.
 --}}
-<div id="contentToPrint" data-bs-theme="light" class="cover-paper bg-white tw:@container tw:aspect-[210/297] tw:font-['Times_New_Roman',Times,serif] tw:text-[#1f2d3d]">
+<div id="contentToPrint" data-bs-theme="light" class="cover-paper bg-white tw:@container tw:aspect-[210/297] tw:font-['Times_New_Roman',Tinos,Times,serif] tw:text-[#1f2d3d]">
     <div class="d-flex flex-column align-items-center text-center h-100 tw:px-[6cqw] tw:pt-[5cqw] tw:pb-[5cqw] tw:text-[2.02cqw] tw:leading-normal">
         <p class="fw-bold mb-0 tw:text-[3.02cqw]">{!! $field('page_type', 'Assignment') !!}</p>
         <p class="fw-bold mb-0 tw:mt-[0.5cqw] tw:text-[4.37cqw] tw:leading-tight tw:text-balance">{{ $college }}</p>

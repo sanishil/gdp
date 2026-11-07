@@ -1,7 +1,7 @@
 {
-  "_fonts-BZ7g3puO.css": {
-    "file": "assets/fonts-BZ7g3puO.css",
-    "src": "_fonts-BZ7g3puO.css"
+  "_fonts-BXj9DWvl.css": {
+    "file": "assets/fonts-BXj9DWvl.css",
+    "src": "_fonts-BXj9DWvl.css"
   },
   "_source-sans-3-400-normal-DQi5PRDE.woff2": {
     "file": "assets/source-sans-3-400-normal-DQi5PRDE.woff2",
@@ -43,6 +43,22 @@
     "file": "assets/source-serif-4-700-normal-CGGdTIBe.woff2",
     "src": "_source-serif-4-700-normal-CGGdTIBe.woff2"
   },
+  "_tinos-400-normal-B05awSIM.woff": {
+    "file": "assets/tinos-400-normal-B05awSIM.woff",
+    "src": "_tinos-400-normal-B05awSIM.woff"
+  },
+  "_tinos-400-normal-rilFpyjL.woff2": {
+    "file": "assets/tinos-400-normal-rilFpyjL.woff2",
+    "src": "_tinos-400-normal-rilFpyjL.woff2"
+  },
+  "_tinos-700-normal-CjcRkLdR.woff": {
+    "file": "assets/tinos-700-normal-CjcRkLdR.woff",
+    "src": "_tinos-700-normal-CjcRkLdR.woff"
+  },
+  "_tinos-700-normal-qGf2y18O.woff2": {
+    "file": "assets/tinos-700-normal-qGf2y18O.woff2",
+    "src": "_tinos-700-normal-qGf2y18O.woff2"
+  },
   "node_modules/@fortawesome/fontawesome-free/webfonts/fa-brands-400.woff2": {
     "file": "assets/fa-brands-400-Bs6tcqqs.woff2",
     "src": "node_modules/@fortawesome/fontawesome-free/webfonts/fa-brands-400.woff2"
@@ -60,7 +76,7 @@
     "src": "node_modules/@fortawesome/fontawesome-free/webfonts/fa-v4compatibility.woff2"
   },
   "node_modules/canvg/lib/index.es.js": {
-    "file": "assets/index.es-BnjXIWgy.js",
+    "file": "assets/index.es-B_0Utu9J.js",
     "name": "index.es",
     "src": "node_modules/canvg/lib/index.es.js",
     "isDynamicEntry": true,
@@ -88,7 +104,7 @@
     "isDynamicEntry": true
   },
   "node_modules/html2canvas/dist/html2canvas.js": {
-    "file": "assets/html2canvas-Bf4h6xph.js",
+    "file": "assets/html2canvas-BstRREpx.js",
     "name": "html2canvas",
     "src": "node_modules/html2canvas/dist/html2canvas.js",
     "isDynamicEntry": true,
@@ -97,7 +113,7 @@
     ]
   },
   "node_modules/jspdf/dist/jspdf.es.min.js": {
-    "file": "assets/jspdf.es.min-BT12VU9m.js",
+    "file": "assets/jspdf.es.min-B-RNx6kv.js",
     "name": "jspdf.es.min",
     "src": "node_modules/jspdf/dist/jspdf.es.min.js",
     "isDynamicEntry": true,
@@ -111,7 +127,7 @@
     ]
   },
   "resources/css/app.css": {
-    "file": "assets/app-DSDw-9u3.css",
+    "file": "assets/app-CrSpEumt.css",
     "name": "app",
     "names": [
       "app.css"
@@ -129,7 +145,7 @@
     "isEntry": true
   },
   "resources/js/app.js": {
-    "file": "assets/app-Cm9nr_hh.js",
+    "file": "assets/app-D6gpXbx_.js",
     "name": "app",
     "src": "resources/js/app.js",
     "isEntry": true,

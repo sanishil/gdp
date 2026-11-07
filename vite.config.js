@@ -15,6 +15,10 @@ export default defineConfig({
                 bunny('Source Serif 4', {
                     weights: [600, 700],
                 }),
+                // Metric-compatible with Times New Roman, for phones without it (Android), so the cover page wraps the same.
+                bunny('Tinos', {
+                    weights: [400, 700],
+                }),
             ],
         }),
         tailwindcss(),

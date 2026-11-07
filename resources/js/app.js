@@ -1112,7 +1112,9 @@ async function printCoverPage(fileName) {
 
 /*
 | Download the cover page as an A4 PDF without the print dialog. The print copy is laid out off screen at A4 width
-| (794px), photographed at 3x for sharp text, and placed full-page in the PDF. The libraries load only when needed.
+| (794px), photographed at 3x for sharp text, and placed full-page in the PDF. The paper's web font (Tinos) is embedded
+| in the snapshot, since phones without Times New Roman would otherwise fall back to a wider serif and wrap differently.
+| The libraries load only when needed.
 | If anything fails, the print dialog opens instead, so the student can still save it.
 */
 async function downloadCoverPdf(fileName) {
@@ -1130,7 +1132,12 @@ async function downloadCoverPdf(fileName) {
 
         await Promise.all([...root.querySelectorAll('img')].map((image) => image.decode().catch(() => null)));
 
-        const image = await toJpeg(paper, { pixelRatio: 3, quality: 0.95, backgroundColor: '#ffffff', skipFonts: true });
+        const options = { pixelRatio: 3, quality: 0.95, backgroundColor: '#ffffff' };
+
+        /* Safari can leave the logo out of the first snapshot, so take a throwaway one first. */
+        await toJpeg(paper, options).catch(() => null);
+
+        const image = await toJpeg(paper, options);
         const pdf = new jsPDF({ unit: 'mm', format: 'a4', compress: true });
 
         pdf.addImage(image, 'JPEG', 0, 0, 210, 297);

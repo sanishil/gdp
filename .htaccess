@@ -1,0 +1,18 @@
+# Used on shared hosts (e.g. InfinityFree) where the document root is the project root
+# instead of /public. Every request is routed into /public, where Laravel's own .htaccess takes over.
+
+Options -Indexes
+DirectoryIndex index.php
+
+# Never serve dotfiles such as .env or .git
+<FilesMatch "^\.">
+    Require all denied
+</FilesMatch>
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    RewriteRule ^$ public/ [L]
+    RewriteCond %{REQUEST_URI} !^/public/
+    RewriteRule ^(.*)$ public/$1 [L,QSA]
+</IfModule>
