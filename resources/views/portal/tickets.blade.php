@@ -9,7 +9,7 @@
 @endphp
 
 <x-layouts.portal :portal="$portal" title="Help tickets">
-    <x-page-header title="Help tickets" subtitle="Raised from the Help page. Resolving a ticket emails your remarks to the person who raised it." />
+    <x-page-header title="Help tickets" />
 
     <x-table-card id="tickets-table" title="{{ $openCount }} open {{ \Illuminate\Support\Str::plural('ticket', $openCount) }}" :count="$tickets->count()" placeholder="Search name, email or transaction ID">
         <x-slot:actions>
