@@ -61,6 +61,7 @@ class SaveStudentRequest extends FormRequest
             'f_name' => ['nullable', 'string', 'max:100'],
             'f2_name' => ['nullable', 'string', 'max:100'],
             'dos' => ['nullable', 'date'],
+            'terms' => $this->user()?->hasAcceptedTerms() ? ['nullable'] : ['accepted'],
         ];
     }
 
@@ -104,6 +105,7 @@ class SaveStudentRequest extends FormRequest
     {
         return [
             'tu_roll.required' => 'Enter your university roll number.',
+            'terms.accepted' => 'You need to accept the terms and conditions.',
             'tu_roll.regex' => 'Enter your university roll number (3 to 30 letters, numbers or hyphens).',
             'title.required' => 'Choose a title.',
             'title.in' => 'Choose a title.',

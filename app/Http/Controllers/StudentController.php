@@ -9,7 +9,7 @@ use Illuminate\Http\JsonResponse;
 /**
  * Student records behind the cover page form: looked up by university roll number to fill the form in, and saved
  * when the student prints (updated if the roll number is already on file, created if not), along with a record of
- * the print itself.
+ * the print itself. A signed-in account that ticked the terms box is recorded as having accepted them.
  */
 class StudentController extends Controller
 {
@@ -28,6 +28,8 @@ class StudentController extends Controller
         );
 
         $student->prints()->create($request->printAttributes());
+
+        $request->user()?->acceptTerms();
 
         return response()->json(['saved' => true], $student->wasRecentlyCreated ? 201 : 200);
     }

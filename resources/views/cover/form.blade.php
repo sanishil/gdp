@@ -4,6 +4,7 @@
     <x-site-header>
         @auth
             <div class="d-flex align-items-center gap-2 flex-shrink-0">
+                <a href="{{ route('help') }}" class="btn btn-sm btn-success"><i class="fa-solid fa-circle-question me-1" aria-hidden="true"></i> Help</a>
                 @if (auth()->user()->role !== \App\Enums\UserRole::Student)
                     <a href="{{ route(auth()->user()->role->dashboardRoute()) }}" class="btn btn-sm btn-outline-primary"><i class="fa-solid fa-gauge me-1" aria-hidden="true"></i> Open portal</a>
                 @endif
@@ -15,9 +16,14 @@
                 </form>
             </div>
         @else
-            <a href="{{ route('login') }}" class="btn btn-sm btn-primary flex-shrink-0">
-                <i class="fa-solid fa-right-to-bracket me-1" aria-hidden="true"></i> Login
-            </a>
+            <div class="d-flex align-items-center gap-2 flex-shrink-0">
+                <a href="{{ route('help') }}" class="btn btn-sm btn-success">
+                    <i class="fa-solid fa-circle-question me-1" aria-hidden="true"></i> Help
+                </a>
+                <a href="{{ route('login') }}" class="btn btn-sm btn-primary">
+                    <i class="fa-solid fa-right-to-bracket me-1" aria-hidden="true"></i> Login
+                </a>
+            </div>
         @endauth
     </x-site-header>
 
@@ -189,6 +195,11 @@
                         </button>
                     </section>
 
+                    {{-- Asked every time of guests; once of an account, then recorded on it. --}}
+                    @unless (auth()->user()?->hasAcceptedTerms())
+                        <x-terms-agreement class="mt-4" />
+                    @endunless
+
                     <div class="form-actions">
                         <button type="reset" class="btn btn-danger"><i class="fa-solid fa-eraser me-1" aria-hidden="true"></i> Clear</button>
                         <button type="submit" class="btn btn-outline-primary" data-output="print" data-busy="Saving…">
@@ -209,6 +220,10 @@
             </aside>
         </div>
     </main>
+
+    @unless (auth()->user()?->hasAcceptedTerms())
+        <x-terms-modal />
+    @endunless
 
     <x-site-footer />
 </x-layouts.app>

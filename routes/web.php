@@ -7,6 +7,7 @@ use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\CoverController;
+use App\Http\Controllers\HelpController;
 use App\Http\Controllers\Portal\AssignmentTypeController;
 use App\Http\Controllers\Portal\DashboardController;
 use App\Http\Controllers\Portal\DepartmentController;
@@ -14,6 +15,7 @@ use App\Http\Controllers\Portal\DesignationController;
 use App\Http\Controllers\Portal\ProfileController;
 use App\Http\Controllers\Portal\StudentController as PortalStudentController;
 use App\Http\Controllers\Portal\SubjectController;
+use App\Http\Controllers\Portal\SupportTicketController;
 use App\Http\Controllers\Portal\TeacherController;
 use App\Http\Controllers\StudentController;
 use App\Http\Requests\SaveStudentRequest;
@@ -28,6 +30,9 @@ Route::middleware(['password.changed', 'throttle:30,1'])->group(function () {
     Route::get('/students/{tuRoll}', [StudentController::class, 'show'])->where('tuRoll', SaveStudentRequest::ROLL_PATTERN)->name('cover.students.show');
     Route::post('/students', [StudentController::class, 'store'])->name('cover.students.store');
 });
+
+Route::get('/help', [HelpController::class, 'create'])->name('help');
+Route::post('/help', [HelpController::class, 'store'])->middleware('throttle:help-ticket');
 
 Route::middleware('guest')->group(function () {
     Route::view('/login', 'auth.login')->name('login');
@@ -110,6 +115,13 @@ foreach (['admin', 'tech'] as $portal) {
             });
             Route::post('/users/{user}/new-password', [UserController::class, 'sendNewPassword'])->middleware('throttle:10,1')->name('users.new-password');
             Route::get('/active-users', [ActiveUserController::class, 'index'])->name('active-users');
+            Route::get('/tickets', [SupportTicketController::class, 'index'])->name('tickets');
+            Route::get('/tickets/{ticket}/screenshot', [SupportTicketController::class, 'showScreenshot'])->name('tickets.screenshot');
+            Route::middleware('throttle:30,1')->group(function () {
+                Route::post('/tickets/{ticket}/resolve', [SupportTicketController::class, 'resolve'])->name('tickets.resolve');
+                Route::post('/tickets/{ticket}/reopen', [SupportTicketController::class, 'reopen'])->name('tickets.reopen');
+                Route::delete('/tickets/{ticket}', [SupportTicketController::class, 'destroy'])->name('tickets.destroy');
+            });
         }
     });
 }

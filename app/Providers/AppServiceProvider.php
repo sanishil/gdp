@@ -78,6 +78,18 @@ class AppServiceProvider extends ServiceProvider
                 ->response(fn (): Response => back()->withErrors(['current_password' => 'Too many tries. Please wait a minute.'], 'updatePassword')),
         ]);
 
+        /* Help tickets keep what was typed (the screenshot can't be kept), so a long message isn't lost. */
+        $tooManyTickets = fn (string $message) => fn (Request $request): Response => back()
+            ->withInput($request->except('screenshot'))
+            ->withErrors(['message' => $message]);
+
+        RateLimiter::for('help-ticket', fn (Request $request) => [
+            Limit::perMinutes(10, 3)->by($typedEmail($request).'|'.$request->ip())
+                ->response($tooManyTickets('You\'ve raised several tickets already. Please wait 10 minutes.')),
+            Limit::perHour(10)->by($request->ip())
+                ->response($tooManyTickets('Too many tickets from this connection. Please try again later.')),
+        ]);
+
         RateLimiter::for('new-password', fn (Request $request) => [
             Limit::perMinute(5)->by(($request->user()?->email ?? $pendingEmail($request)).'|'.$request->ip())
                 ->response($tooMany('password', 'Too many tries. Please wait a minute.')),

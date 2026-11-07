@@ -698,6 +698,39 @@ document.addEventListener('show.bs.modal', (event) => {
     modal.querySelectorAll('[data-option-filter]').forEach((select) => select.dispatchEvent(new Event('refresh')));
 });
 
+/* Help page: payment and refund tickets need the transaction ID. */
+const ticketCategory = document.querySelector('#category option[data-needs-transaction]')?.parentElement;
+
+if (ticketCategory) {
+    const transactionId = document.getElementById('transaction_id');
+    const needsTransaction = () => {
+        transactionId.required = Boolean(ticketCategory.selectedOptions[0]?.hasAttribute('data-needs-transaction'));
+    };
+
+    ticketCategory.addEventListener('change', needsTransaction);
+    needsTransaction();
+}
+
+/* Help tickets: the "Remarks sent when resolved" part only shows once a ticket has remarks. */
+document.addEventListener('show.bs.modal', (event) => {
+    const resolution = event.target.querySelector('[data-ticket-resolution]');
+
+    if (resolution) {
+        resolution.hidden = !JSON.parse(event.relatedTarget?.dataset.record ?? '{}').resolution;
+    }
+});
+
+/* "I agree" in a terms modal ticks its checkbox. */
+document.querySelectorAll('[data-accept-terms]').forEach((button) => {
+    button.addEventListener('click', () => {
+        const checkbox = document.querySelector(button.dataset.acceptTerms);
+
+        checkbox.checked = true;
+        checkbox.classList.remove('is-invalid');
+        checkbox.dispatchEvent(new Event('change', { bubbles: true }));
+    });
+});
+
 document.querySelectorAll('.modal[data-show-on-load]').forEach((modal) => bootstrap.Modal.getOrCreateInstance(modal).show());
 
 /* Coming back with the browser's Back button can restore a page mid-submit; unlock its forms. */

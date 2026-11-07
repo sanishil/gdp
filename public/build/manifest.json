@@ -76,7 +76,7 @@
     "src": "node_modules/@fortawesome/fontawesome-free/webfonts/fa-v4compatibility.woff2"
   },
   "node_modules/canvg/lib/index.es.js": {
-    "file": "assets/index.es-B_0Utu9J.js",
+    "file": "assets/index.es-bjZ1niaL.js",
     "name": "index.es",
     "src": "node_modules/canvg/lib/index.es.js",
     "isDynamicEntry": true,
@@ -104,7 +104,7 @@
     "isDynamicEntry": true
   },
   "node_modules/html2canvas/dist/html2canvas.js": {
-    "file": "assets/html2canvas-BstRREpx.js",
+    "file": "assets/html2canvas-CJco-zg8.js",
     "name": "html2canvas",
     "src": "node_modules/html2canvas/dist/html2canvas.js",
     "isDynamicEntry": true,
@@ -113,7 +113,7 @@
     ]
   },
   "node_modules/jspdf/dist/jspdf.es.min.js": {
-    "file": "assets/jspdf.es.min-B-RNx6kv.js",
+    "file": "assets/jspdf.es.min-5lYvjgue.js",
     "name": "jspdf.es.min",
     "src": "node_modules/jspdf/dist/jspdf.es.min.js",
     "isDynamicEntry": true,
@@ -127,7 +127,7 @@
     ]
   },
   "resources/css/app.css": {
-    "file": "assets/app-CrSpEumt.css",
+    "file": "assets/app-sUp5Mv48.css",
     "name": "app",
     "names": [
       "app.css"
@@ -145,7 +145,7 @@
     "isEntry": true
   },
   "resources/js/app.js": {
-    "file": "assets/app-D6gpXbx_.js",
+    "file": "assets/app-CRvgteZQ.js",
     "name": "app",
     "src": "resources/js/app.js",
     "isEntry": true,

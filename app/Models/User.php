@@ -30,11 +30,27 @@ class User extends Authenticatable
     {
         return [
             'email_verified_at' => 'datetime',
+            'terms_accepted_at' => 'datetime',
             'password' => 'hashed',
             'role' => UserRole::class,
             'must_change_password' => 'boolean',
             'deactivated_at' => 'datetime',
         ];
+    }
+
+    public function hasAcceptedTerms(): bool
+    {
+        return $this->terms_accepted_at !== null;
+    }
+
+    /**
+     * Records that the account agreed to the terms and conditions, unless it already has.
+     */
+    public function acceptTerms(): void
+    {
+        if (! $this->hasAcceptedTerms()) {
+            $this->forceFill(['terms_accepted_at' => now()])->save();
+        }
     }
 
     /**

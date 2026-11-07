@@ -32,9 +32,11 @@ class RegisterController extends Controller
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:100'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email'],
+            'terms' => ['accepted'],
             'g-recaptcha-response' => [new Recaptcha($request->ip())],
         ], [
             'email.unique' => 'There\'s already an account with this email. Sign in, or reset the password.',
+            'terms.accepted' => 'You need to accept the terms and conditions to create an account.',
         ]);
 
         $email = Str::lower($validated['email']);
@@ -82,7 +84,7 @@ class RegisterController extends Controller
         }
 
         try {
-            $accounts->create($name, $email, UserRole::Student, emailVerified: true);
+            $accounts->create($name, $email, UserRole::Student, emailVerified: true, termsAccepted: true);
         } catch (TransportExceptionInterface $exception) {
             report($exception);
 

@@ -17,10 +17,14 @@
             <x-field-error for="email">Enter your email address.</x-field-error>
         </div>
 
+        <x-terms-agreement />
+
         <x-recaptcha />
 
         <button type="submit" class="btn btn-success w-100 mt-2" data-busy="Sending code…"><i class="fa-solid fa-paper-plane me-1" aria-hidden="true"></i> Send code</button>
     </form>
+
+    <x-terms-modal />
 
     <p class="small text-center mt-4 mb-0">
         Already have an account? <a href="{{ route('login') }}">Sign in</a>

@@ -21,15 +21,15 @@ class EmailedPasswordAccount
     public const PASSWORD_LENGTH = 8;
 
     /**
-     * Nothing is saved if the email can't be sent.
+     * Nothing is saved if the email can't be sent. `$termsAccepted` records that the person agreed to the terms (sign-up).
      *
      * @throws TransportExceptionInterface
      */
-    public function create(string $name, string $email, UserRole $role, bool $emailVerified = false): User
+    public function create(string $name, string $email, UserRole $role, bool $emailVerified = false, bool $termsAccepted = false): User
     {
         $password = Str::password(self::PASSWORD_LENGTH, letters: false, symbols: false);
 
-        return DB::transaction(function () use ($name, $email, $role, $emailVerified, $password): User {
+        return DB::transaction(function () use ($name, $email, $role, $emailVerified, $termsAccepted, $password): User {
             $user = User::create([
                 'name' => $name,
                 'email' => $email,
@@ -38,6 +38,10 @@ class EmailedPasswordAccount
                 'must_change_password' => true,
                 'email_verified_at' => $emailVerified ? now() : null,
             ]);
+
+            if ($termsAccepted) {
+                $user->forceFill(['terms_accepted_at' => now()])->save();
+            }
 
             Mail::to($email)->send(new AccountPasswordMail($name, $password));
 

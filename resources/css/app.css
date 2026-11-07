@@ -506,7 +506,8 @@
         color: #a51d2d;
     }
 
-    /* Row actions: solid square buttons (amber = edit / reset, red = delete / deactivate). */
+    /* Row actions: solid square buttons (blue = read / open, amber = edit / reset, red = delete / deactivate). */
+    .portal .btn-icon-info,
     .portal .btn-icon-warning,
     .portal .btn-icon-danger {
         --bs-btn-padding-x: 0;
@@ -517,6 +518,15 @@
         width: 2.4rem;
         height: 2.4rem;
         border-radius: 0.4rem;
+    }
+
+    .portal .btn-icon-info {
+        --bs-btn-color: #fff;
+        --bs-btn-bg: #0b6bcb;
+        --bs-btn-hover-color: #fff;
+        --bs-btn-hover-bg: #0a5bad;
+        --bs-btn-active-bg: #0a5bad;
+        --bs-btn-active-color: #fff;
     }
 
     .portal .btn-icon-warning {
@@ -739,7 +749,15 @@
         --bs-btn-hover-border-color: transparent;
     }
 
-    /* Row icons take the action's colour: warning = edit / reset, danger = delete / deactivate. */
+    /* Row icons take the action's colour: info = read / open, warning = edit / reset, danger = delete / deactivate. */
+    .btn-icon-info {
+        --bs-btn-color: var(--bs-info-text-emphasis);
+        --bs-btn-hover-bg: var(--bs-info-bg-subtle);
+        --bs-btn-hover-color: var(--bs-info-text-emphasis);
+        --bs-btn-active-bg: var(--bs-info-bg-subtle);
+        --bs-btn-active-color: var(--bs-info-text-emphasis);
+    }
+
     .btn-icon-warning {
         --bs-btn-color: var(--bs-warning-text-emphasis);
         --bs-btn-hover-bg: var(--bs-warning-bg-subtle);

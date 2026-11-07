@@ -2,9 +2,16 @@
 
 <x-layouts.app :title="$title" :themeable="false" class="intake d-flex flex-column min-vh-100">
     <x-site-header subtitle="Portal">
-        <a href="{{ route('cover.form') }}" class="btn btn-sm btn-outline-primary flex-shrink-0">
-            <i class="fa-solid fa-file-lines me-1" aria-hidden="true"></i> Cover page
-        </a>
+        <div class="d-flex align-items-center gap-2 flex-shrink-0">
+            @unless (request()->routeIs('help'))
+                <a href="{{ route('help') }}" class="btn btn-sm btn-success">
+                    <i class="fa-solid fa-circle-question me-1" aria-hidden="true"></i> Help
+                </a>
+            @endunless
+            <a href="{{ route('cover.form') }}" class="btn btn-sm btn-outline-primary">
+                <i class="fa-solid fa-file-lines me-1" aria-hidden="true"></i> Cover page
+            </a>
+        </div>
     </x-site-header>
 
     <main id="main" class="auth-main flex-grow-1">
