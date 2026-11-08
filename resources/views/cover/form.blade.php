@@ -33,7 +33,7 @@
 
         <div class="row g-4 g-xl-5">
             <div class="col-lg-7">
-                <form method="POST" action="{{ route('cover.students.store') }}" class="brand-form" data-print-form novalidate>
+                <form method="POST" action="{{ route('cover.students.store') }}" class="brand-form" data-print-form data-price="{{ $price }}" novalidate>
                     @csrf
                     <section class="form-part">
                         <h2 class="form-part-title"><i class="fa-solid fa-plus" aria-hidden="true"></i> Student details</h2>
@@ -199,6 +199,13 @@
                     @unless (auth()->user()?->hasAcceptedTerms())
                         <x-terms-agreement class="mt-4" />
                     @endunless
+
+                    @if ($price > 0)
+                        <p class="small intake-muted mt-4 mb-0">
+                            <i class="fa-solid fa-indian-rupee-sign me-1" aria-hidden="true"></i>
+                            Each cover page costs <strong>{{ \App\Models\Payment::formatPaise($price) }}</strong>, paid securely through Razorpay (UPI, card or net banking) before it's printed or downloaded.
+                        </p>
+                    @endif
 
                     <div class="form-actions">
                         <button type="reset" class="btn btn-danger"><i class="fa-solid fa-eraser me-1" aria-hidden="true"></i> Clear</button>

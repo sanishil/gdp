@@ -777,33 +777,30 @@ function setBusy(button, busy) {
 /*
 | The cover page form saves the student's details (updated if the roll number is on file, added if not), then either
 | downloads the cover page as a PDF (data-output="pdf") or opens the print dialog (data-output="print").
-| A field the server rejects is marked and nothing is made; if the save can't be reached, the page is still made.
+| A field the server rejects is marked and nothing is made. While printing is free (data-price="0"), the page is
+| still made if the save can't be reached. Once a price is set, the server answers with a Razorpay order instead:
+| Checkout opens, and the page is made only after the payment goes through.
 */
 async function saveThenPrint(form, button) {
     form.dataset.submitting = 'true';
     setBusy(button, true);
+
+    const finish = () => {
+        delete form.dataset.submitting;
+        setBusy(button, false);
+    };
 
     const response = await fetch(form.action, {
         method: 'POST',
         headers: { Accept: 'application/json' },
         body: new FormData(form),
     }).catch(() => null);
-
-    if (response?.status !== 422 && button?.dataset.output === 'pdf') {
-        if (!response?.ok) {
-            toast("Couldn't save your details, but your PDF is still being made.", 'error');
-        }
-
-        await downloadCoverPdf(pdfFileName(form));
-    }
-
-    delete form.dataset.submitting;
-    setBusy(button, false);
+    const body = (await response?.json().catch(() => null)) ?? {};
 
     if (response?.status === 422) {
-        const { errors } = await response.json();
+        finish();
 
-        Object.entries(errors).forEach(([name, messages]) => {
+        Object.entries(body.errors ?? {}).forEach(([name, messages]) => {
             const input = form.elements[name];
             const feedback = input?.parentElement.querySelector('.invalid-feedback');
 
@@ -818,15 +815,102 @@ async function saveThenPrint(form, button) {
         return;
     }
 
+    if (body.payment) {
+        if (!(await payWithRazorpay(body.payment))) {
+            finish();
+            return;
+        }
+    } else if (!response?.ok) {
+        if (Number(form.dataset.price) > 0) {
+            finish();
+            toast(body.message ?? "Couldn't reach the server, so the payment couldn't start. Please try again.", 'error');
+            return;
+        }
+
+        toast(button?.dataset.output === 'pdf' ? "Couldn't save your details, but your PDF is still being made." : "Couldn't save your details, but you can still print.", 'error');
+    }
+
     if (button?.dataset.output === 'pdf') {
+        await downloadCoverPdf(pdfFileName(form));
+        finish();
         return;
     }
 
-    if (!response?.ok) {
-        toast("Couldn't save your details, but you can still print.", 'error');
+    finish();
+    await printCoverPage(pdfFileName(form));
+}
+
+/* Razorpay's Checkout script is only needed once a student pays, so it's loaded then. */
+function loadRazorpayCheckout() {
+    if (window.Razorpay) {
+        return Promise.resolve(true);
     }
 
-    await printCoverPage(pdfFileName(form));
+    return new Promise((resolve) => {
+        const script = document.createElement('script');
+        script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+        script.onload = () => resolve(true);
+        script.onerror = () => resolve(false);
+        document.head.append(script);
+    });
+}
+
+/*
+| Open Checkout for the order and, once it's paid, send Razorpay's signed reply to the server so the print is
+| recorded. Resolves true when the cover page should be made. If the confirmation can't reach the server the page
+| is still made: the payment went through, and Razorpay's webhook records it.
+*/
+async function payWithRazorpay(payment) {
+    if (!(await loadRazorpayCheckout())) {
+        toast("Couldn't open the payment window. Check your connection and try again.", 'error');
+        return false;
+    }
+
+    const result = await new Promise((resolve) => {
+        const checkout = new window.Razorpay({
+            key: payment.key,
+            order_id: payment.order_id,
+            amount: payment.amount,
+            currency: payment.currency,
+            name: payment.name,
+            description: payment.description,
+            prefill: payment.prefill,
+            theme: { color: '#22609f' },
+            handler: resolve,
+            modal: { ondismiss: () => resolve(null) },
+        });
+
+        /* A failed attempt leaves Checkout open so the student can try again; just say why it failed. */
+        checkout.on('payment.failed', ({ error }) => {
+            toast(error?.description ?? "That payment didn't go through. Try again or use another method.", 'error');
+        });
+
+        checkout.open();
+    });
+
+    if (!result) {
+        toast('Payment cancelled, so your cover page was not made.', 'error');
+        return false;
+    }
+
+    const response = await fetch(payment.confirm_url, {
+        method: 'POST',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content ?? '',
+        },
+        body: JSON.stringify(result),
+    }).catch(() => null);
+
+    if (response && !response.ok) {
+        const { message } = (await response.json().catch(() => null)) ?? {};
+        toast(message ?? `We couldn't confirm your payment. Raise a Help ticket with payment ID ${result.razorpay_payment_id}.`, 'error');
+        return false;
+    }
+
+    toast('Payment received. Thank you!');
+    return true;
 }
 
 /*

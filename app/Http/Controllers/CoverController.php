@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\AssignmentType;
 use App\Models\Department;
+use App\Models\Setting;
 use App\Models\Subject;
 use App\Models\Teacher;
 use Illuminate\Contracts\View\View;
@@ -33,6 +34,7 @@ class CoverController extends Controller
             'teachers' => Teacher::with(['department', 'designations'])->orderBy('name')->get(),
             'assignmentTypes' => AssignmentType::pluck('name')->sort(SORT_NATURAL | SORT_FLAG_CASE)->values(),
             'options' => ['titles' => self::TITLES, 'sections' => self::SECTIONS],
+            'price' => Setting::coverPrice(),
         ]);
     }
 }

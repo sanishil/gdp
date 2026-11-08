@@ -14,6 +14,7 @@
     if ($portal === 'admin') {
         $items[] = ['route' => 'users', 'label' => 'User accounts', 'icon' => 'fa-users-gear'];
         $items[] = ['route' => 'active-users', 'label' => 'Signed in now', 'icon' => 'fa-circle-dot'];
+        $items[] = ['route' => 'payments', 'label' => 'Payments', 'icon' => 'fa-indian-rupee-sign'];
         $items[] = ['route' => 'tickets', 'label' => 'Help tickets', 'icon' => 'fa-circle-question'];
     }
 
